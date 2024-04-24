@@ -8,7 +8,7 @@ type OauthRequest struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
 	GrantType    string `json:"grant_type"`
-	Scope        string `json:"scope"`
+	Scopes       string `json:"scope"`
 }
 
 type OauthResponse struct {
@@ -26,6 +26,8 @@ func NewOAuth(client *Client) *OAuth {
 
 func (o *OAuth) Authorize(req *OauthRequest) (*OauthResponse, error) {
 	var resp OauthResponse
+
+	//
 
 	return &resp, nil
 }
