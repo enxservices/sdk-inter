@@ -24,10 +24,10 @@ type oauthData struct {
 }
 
 type OauthResponse struct {
-	AccessToken string           `json:"access_token"`
-	TokenType   string           `json:"token_type"`
-	ExpiresIn   int              `json:"expires_in"`
-	Scope       []intersdk.Scope `json:"scope"`
+	AccessToken string        `json:"access_token"`
+	TokenType   string        `json:"token_type"`
+	ExpiresIn   int           `json:"expires_in"`
+	Scope       []types.Scope `json:"scope"`
 }
 
 func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
@@ -41,7 +41,7 @@ func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
 }
 
 // Authorize authorizes the client with the provided scopes
-func (o *OAuth) Authorize(scopes []intersdk.Scope) (*OauthResponse, error) {
+func (o *OAuth) Authorize(scopes []types.Scope) (*OauthResponse, error) {
 	var resp OauthResponse
 
 	var sn []string
@@ -86,7 +86,7 @@ func (o *OAuth) Authorize(scopes []intersdk.Scope) (*OauthResponse, error) {
 }
 
 // GetAccessToken returns the access token for the provided scopes (short function)
-func (o *OAuth) GetAccessToken(scopes []intersdk.Scope) string {
+func (o *OAuth) GetAccessToken(scopes []types.Scope) string {
 	f, err := o.Authorize(scopes)
 	if err != nil {
 		return ""

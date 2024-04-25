@@ -1,4 +1,4 @@
-package intersdk
+package types
 
 type Scope string
 
