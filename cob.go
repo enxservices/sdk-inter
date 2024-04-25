@@ -65,146 +65,66 @@ const (
 )
 
 type Payer struct {
-	email      string     `json:"email"`
-	ddd        string     `json:"ddd"`
-	phone      string     `json:"telefone"`
-	number     string     `json:"numero"`
-	complement string     `json:"complemento"`
-	doc        string     `json:"cpfCnpj"`
-	kindPeople KindPeople `json:"tipoPessoa"`
-	name       string     `json:"nome"`
-	address    string     `json:"endereco"`
-	district   string     `json:"bairro"`
-	city       string     `json:"cidade"`
-	state      State      `json:"uf"`
-	zipCode    string     `json:"cep"`
+	Email      string     `json:"email"`
+	DDD        string     `json:"ddd"`
+	Phone      string     `json:"telefone"`
+	Number     string     `json:"numero"`
+	Complement string     `json:"complemento"`
+	Doc        string     `json:"cpfCnpj"`
+	KindPeople KindPeople `json:"tipoPessoa"`
+	Name       string     `json:"nome"`
+	Address    string     `json:"endereco"`
+	District   string     `json:"bairro"`
+	City       string     `json:"cidade"`
+	State      State      `json:"uf"`
+	ZipCode    string     `json:"cep"`
 }
 
 type Message struct {
-	lineOne   *string `json:"linha1"`
-	lineTwo   *string `json:"linha2"`
-	lineThree *string `json:"linha3"`
-	lineFour  *string `json:"linha4"`
-	lineFive  *string `json:"linha5"`
+	LineOne   *string `json:"linha1"`
+	LineTwo   *string `json:"linha2"`
+	LineThree *string `json:"linha3"`
+	LineFour  *string `json:"linha4"`
+	LineFive  *string `json:"linha5"`
 }
 
 type Discount struct {
-	fee          int              `json:"taxa"`
-	code         CodeTypeDiscount `json:"codigo"`
-	daysQuantity int              `json:"quantidadeDias"`
+	Fee          int              `json:"taxa"`
+	Code         CodeTypeDiscount `json:"codigo"`
+	DaysQuantity int              `json:"quantidadeDias"`
 }
 
 type Fine struct {
-	fee  int         `json:"taxa"`
-	code CodeTypeFee `json:"codigo"`
+	Fee  int         `json:"taxa"`
+	Code CodeTypeFee `json:"codigo"`
 }
 
 type LatePaymentFee struct {
-	fee  int                 `json:"taxa"`
-	code CodeTypeLatePayment `json:"codigo"`
+	Fee  int                 `json:"taxa"`
+	Code CodeTypeLatePayment `json:"codigo"`
 }
 
 type Beneficiary struct {
-	doc        string     `json:"cpfCnpj"`
-	kindPeople KindPeople `json:"tipoPessoa"`
-	name       string     `json:"nome"`
-	address    string     `json:"endereco"`
-	district   string     `json:"bairro"`
-	city       string     `json:"cidade"`
-	state      State      `json:"uf"`
-	zipCode    string     `json:"cep"`
+	Doc        string     `json:"cpfCnpj"`
+	KindPeople KindPeople `json:"tipoPessoa"`
+	Name       string     `json:"nome"`
+	Address    string     `json:"endereco"`
+	District   string     `json:"bairro"`
+	City       string     `json:"cidade"`
+	State      State      `json:"uf"`
+	ZipCode    string     `json:"cep"`
 }
 
 // Date Format YYYY-MM-DD
 type Charge struct {
-	yourNumber       string          `json:"seuNumero"`
-	nominalValue     float64         `json:"valorNominal"`
-	dueDate          time.Time       `json:"dataVencimento"`
-	daysAfterDue     int             `json:"numDiasAgenda"`
-	payer            Payer           `json:"pagador"`
-	discount         *Discount       `json:"desconto,omitempty"`
-	fine             *Fine           `json:"multa,omitempty"`
-	latePayment      *LatePaymentFee `json:"juros,omitempty"`
-	message          *Message        `json:"mensagem,omitempty"`
-	finalBeneficiary Beneficiary     `json:"beneficiarioFinal"`
-}
-
-//Type constructors
-
-func NewBeneficiary(doc, name, address, district, city, zipCode string, kindPeople KindPeople, state State) Beneficiary {
-	return Beneficiary{
-		doc:        doc,
-		kindPeople: kindPeople,
-		name:       name,
-		address:    address,
-		district:   district,
-		city:       city,
-		state:      state,
-		zipCode:    zipCode,
-	}
-}
-
-func NewPayer(email, ddd, phone, number, complement, doc, name, address, district, city, zipCode string, kindPeople KindPeople, state State) Payer {
-	return Payer{
-		email:      email,
-		ddd:        ddd,
-		phone:      phone,
-		number:     number,
-		complement: complement,
-		doc:        doc,
-		kindPeople: kindPeople,
-		name:       name,
-		address:    address,
-		district:   district,
-		city:       city,
-		state:      state,
-		zipCode:    zipCode,
-	}
-}
-
-func NewDiscount(fee, daysQuantity int, code CodeTypeDiscount) Discount {
-	return Discount{
-		fee:          fee,
-		daysQuantity: daysQuantity,
-		code:         code,
-	}
-}
-
-func NewFine(fee int, code CodeTypeFee) Fine {
-	return Fine{
-		fee:  fee,
-		code: code,
-	}
-}
-
-func NewMessage(lineOne, lineTwo, lineThree, lineFour, lineFive *string) Message {
-	return Message{
-		lineOne:   lineOne,
-		lineTwo:   lineTwo,
-		lineThree: lineThree,
-		lineFour:  lineFour,
-		lineFive:  lineFive,
-	}
-}
-
-func NewLatePaymentFee(fee int, code CodeTypeLatePayment) LatePaymentFee {
-	return LatePaymentFee{
-		fee:  fee,
-		code: code,
-	}
-}
-
-func NewCharge(yourNumber string, nominalValue float64, dueDate time.Time, daysAfterDue int, payer Payer, discount *Discount, latePayment *LatePaymentFee, fine *Fine, message *Message, finalBeneficiary Beneficiary) Charge {
-	return Charge{
-		yourNumber:       yourNumber,
-		nominalValue:     nominalValue,
-		dueDate:          dueDate,
-		daysAfterDue:     daysAfterDue,
-		payer:            payer,
-		discount:         discount,
-		latePayment:      latePayment,
-		fine:             fine,
-		message:          message,
-		finalBeneficiary: finalBeneficiary,
-	}
+	YourNumber       string          `json:"seuNumero"`
+	NominalValue     float64         `json:"valorNominal"`
+	DueDate          time.Time       `json:"dataVencimento"`
+	DaysAfterDue     int             `json:"numDiasAgenda"`
+	Payer            Payer           `json:"pagador"`
+	Discount         *Discount       `json:"desconto,omitempty"`
+	Fine             *Fine           `json:"multa,omitempty"`
+	LatePayment      *LatePaymentFee `json:"juros,omitempty"`
+	Message          *Message        `json:"mensagem,omitempty"`
+	FinalBeneficiary Beneficiary     `json:"beneficiarioFinal"`
 }

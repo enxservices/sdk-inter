@@ -6,5 +6,6 @@ const (
 	CobPixBoletoUrl = "https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas"
 	CobBoletoUrl    = "https://cdpj.partners.bancointer.com.br/cobranca/v2/boletos"
 	CobPixUrl       = "https://cdpj.partners.bancointer.com.br/pix/v2"
+	CobWebHookUrl   = "https://cdpj.partners.bancointer.com.br/cobranca/v3/cobrancas/webhook"
 	GrantType       = "client_credentials"
 )
