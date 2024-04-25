@@ -39,15 +39,15 @@ const (
 type CodeTypeDiscount string
 
 const (
-	valueFixedInfoData CodeTypeDiscount = "VALORFIXODATAINFORMADA"
-	percentageInfoData CodeTypeDiscount = "PERCENTUALDATAINFORMADA"
+	ValueFixedInfoData CodeTypeDiscount = "VALORFIXODATAINFORMADA"
+	PercentageInfoData CodeTypeDiscount = "PERCENTUALDATAINFORMADA"
 )
 
 type CodeTypeFee string
 
 const (
-	feePercentage CodeTypeFee = "PERCENTUAL"
-	feeFix        CodeTypeFee = "VALORFIXO"
+	FeePercentage CodeTypeFee = "PERCENTUAL"
+	FeeFix        CodeTypeFee = "VALORFIXO"
 )
 
 type CodeTypeLatePayment string
@@ -115,8 +115,8 @@ type Beneficiary struct {
 	ZipCode    string     `json:"cep"`
 }
 
-// Date Format YYYY-MM-DD
-type Charge struct {
+// Date Format YYYY-MM-DD (Request STRUCT)
+type CreateCharge struct {
 	YourNumber       string          `json:"seuNumero"`
 	NominalValue     float64         `json:"valorNominal"`
 	DueDate          time.Time       `json:"dataVencimento"`
@@ -127,4 +127,10 @@ type Charge struct {
 	LatePayment      *LatePaymentFee `json:"juros,omitempty"`
 	Message          *Message        `json:"mensagem,omitempty"`
 	FinalBeneficiary Beneficiary     `json:"beneficiarioFinal"`
+}
+
+type Charge struct {
+}
+
+type Ticket struct {
 }
