@@ -6,6 +6,7 @@ type Inter struct {
 	KeyFilePath  string
 	CertFilePath string
 
+	// Client is the HTTP client
 	Client *Client
 	Oauth  *OAuth
 }
@@ -28,7 +29,7 @@ func New(options ...Option) Inter {
 	i.Client = c
 
 	// create a new OAuth instance
-	o := NewOAuth(c)
+	o := NewOAuth(i.Client, i.ClientID, i.ClientSecret)
 	i.Oauth = o
 
 	return i

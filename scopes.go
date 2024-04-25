@@ -16,3 +16,7 @@ const (
 	WebhookRead         Scope = "webhook.read"
 	WebhookWrite        Scope = "webhook.write"
 )
+
+func (s Scope) String() string {
+	return string(s)
+}

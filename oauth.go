@@ -6,17 +6,18 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type OAuth struct {
 	client *Client
+
+	oauthData
 }
 
-type OauthRequest struct {
+type oauthData struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
-	GrantType    string `json:"grant_type"`
-	Scopes       string `json:"scope"`
 }
 
 type OauthResponse struct {
@@ -26,20 +27,30 @@ type OauthResponse struct {
 	Scope       []Scope `json:"scope"`
 }
 
-func NewOAuth(client *Client) *OAuth {
+func NewOAuth(client *Client, clientId, clientSecret string) *OAuth {
 	return &OAuth{
 		client: client,
+		oauthData: oauthData{
+			ClientID:     clientId,
+			ClientSecret: clientSecret,
+		},
 	}
 }
 
-func (o *OAuth) Authorize(data *OauthRequest) (*OauthResponse, error) {
+// Authorize authorizes the client with the provided scopes
+func (o *OAuth) Authorize(scopes []Scope) (*OauthResponse, error) {
 	var resp OauthResponse
 
+	var sn []string
+	for _, scope := range scopes {
+		sn = append(sn, scope.String())
+	}
+
 	form := url.Values{}
-	form.Add("client_id", data.ClientID)
-	form.Add("client_secret", data.ClientSecret)
-	form.Add("grant_type", data.GrantType)
-	form.Add("scope", data.Scopes)
+	form.Add("client_id", o.ClientID)
+	form.Add("client_secret", o.ClientSecret)
+	form.Add("grant_type", GrantType)
+	form.Add("scope", strings.Join(sn, " "))
 
 	req, err := http.NewRequest(http.MethodPost, OauthUrl, bytes.NewBufferString(form.Encode()))
 	if err != nil {
@@ -69,4 +80,14 @@ func (o *OAuth) Authorize(data *OauthRequest) (*OauthResponse, error) {
 	}
 
 	return &resp, nil
+}
+
+// GetAccessToken returns the access token for the provided scopes (short function)
+func (o *OAuth) GetAccessToken(scopes []Scope) string {
+	f, err := o.Authorize(scopes)
+	if err != nil {
+		return ""
+	}
+
+	return f.AccessToken
 }
