@@ -3,14 +3,16 @@ package oauth
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 
-	intersdk "github.com/enxservices/sdk-inter"
 	"github.com/enxservices/sdk-inter/internal/types"
 )
+
+var ErrOauthFailed = errors.New("oauth failed")
 
 type OAuth struct {
 	client *http.Client
@@ -74,7 +76,7 @@ func (o *OAuth) Authorize(scopes []types.Scope) (*OauthResponse, error) {
 	}
 
 	if body == nil || res.StatusCode != http.StatusOK {
-		return nil, intersdk.ErrOauthFailed
+		return nil, ErrOauthFailed
 	}
 
 	// unmarshal
