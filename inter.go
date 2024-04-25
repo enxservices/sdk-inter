@@ -43,7 +43,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, options ...Op
 
 	i.client = c
 
-	o := oauth.NewOAuth(c)
+	o := oauth.NewOAuth(c, clientID, clientSecret)
 	i.Oauth = o
 
 	return i, nil
