@@ -1,4 +1,4 @@
-package intersdk
+package cache
 
 import "sync"
 

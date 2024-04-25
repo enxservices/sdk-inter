@@ -1,4 +1,4 @@
-package intersdk
+package types
 
 const (
 	BaseUrl         = "https://cdpj.partners.bancointer.com.br"

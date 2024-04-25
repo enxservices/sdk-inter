@@ -1,4 +1,4 @@
-package intersdk
+package oauth
 
 import (
 	"bytes"
@@ -7,10 +7,13 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	intersdk "github.com/enxservices/sdk-inter"
+	"github.com/enxservices/sdk-inter/internal/types"
 )
 
 type OAuth struct {
-	client *Client
+	client *http.Client
 
 	oauthData
 }
@@ -21,13 +24,13 @@ type oauthData struct {
 }
 
 type OauthResponse struct {
-	AccessToken string  `json:"access_token"`
-	TokenType   string  `json:"token_type"`
-	ExpiresIn   int     `json:"expires_in"`
-	Scope       []Scope `json:"scope"`
+	AccessToken string           `json:"access_token"`
+	TokenType   string           `json:"token_type"`
+	ExpiresIn   int              `json:"expires_in"`
+	Scope       []intersdk.Scope `json:"scope"`
 }
 
-func NewOAuth(client *Client, clientId, clientSecret string) *OAuth {
+func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
 	return &OAuth{
 		client: client,
 		oauthData: oauthData{
@@ -38,7 +41,7 @@ func NewOAuth(client *Client, clientId, clientSecret string) *OAuth {
 }
 
 // Authorize authorizes the client with the provided scopes
-func (o *OAuth) Authorize(scopes []Scope) (*OauthResponse, error) {
+func (o *OAuth) Authorize(scopes []intersdk.Scope) (*OauthResponse, error) {
 	var resp OauthResponse
 
 	var sn []string
@@ -49,10 +52,10 @@ func (o *OAuth) Authorize(scopes []Scope) (*OauthResponse, error) {
 	form := url.Values{}
 	form.Add("client_id", o.ClientID)
 	form.Add("client_secret", o.ClientSecret)
-	form.Add("grant_type", GrantType)
+	form.Add("grant_type", types.GrantType)
 	form.Add("scope", strings.Join(sn, " "))
 
-	req, err := http.NewRequest(http.MethodPost, OauthUrl, bytes.NewBufferString(form.Encode()))
+	req, err := http.NewRequest(http.MethodPost, types.OauthUrl, bytes.NewBufferString(form.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +74,7 @@ func (o *OAuth) Authorize(scopes []Scope) (*OauthResponse, error) {
 	}
 
 	if body == nil || res.StatusCode != http.StatusOK {
-		return nil, ErrOauthFailed
+		return nil, intersdk.ErrOauthFailed
 	}
 
 	// unmarshal
@@ -83,7 +86,7 @@ func (o *OAuth) Authorize(scopes []Scope) (*OauthResponse, error) {
 }
 
 // GetAccessToken returns the access token for the provided scopes (short function)
-func (o *OAuth) GetAccessToken(scopes []Scope) string {
+func (o *OAuth) GetAccessToken(scopes []intersdk.Scope) string {
 	f, err := o.Authorize(scopes)
 	if err != nil {
 		return ""

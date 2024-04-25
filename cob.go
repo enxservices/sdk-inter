@@ -4,11 +4,6 @@ import (
 	"time"
 )
 
-type KindPeople string
-type CodeTypeDiscount string
-type CodeTypeFee string
-type CodeTypeLatePayment string
-
 type State string
 
 const (
@@ -41,15 +36,32 @@ const (
 	StateTocantins        State = "TO"
 )
 
+type CodeTypeDiscount string
+
 const (
-	valueFixedInfoData    CodeTypeDiscount    = "VALORFIXODATAINFORMADA"
-	percentageInfoData    CodeTypeDiscount    = "PERCENTUALDATAINFORMADA"
-	feePercentage         CodeTypeFee         = "PERCENTUAL"
-	feeFix                CodeTypeFee         = "VALORFIXO"
+	valueFixedInfoData CodeTypeDiscount = "VALORFIXODATAINFORMADA"
+	percentageInfoData CodeTypeDiscount = "PERCENTUALDATAINFORMADA"
+)
+
+type CodeTypeFee string
+
+const (
+	feePercentage CodeTypeFee = "PERCENTUAL"
+	feeFix        CodeTypeFee = "VALORFIXO"
+)
+
+type CodeTypeLatePayment string
+
+const (
 	LatePaymentFeeDaily   CodeTypeLatePayment = "VALORDIA"
 	LatePaymentFeeMonthly CodeTypeLatePayment = "TAXAMENSAL"
-	PJ                    KindPeople          = "JURIDICA"
-	PF                    KindPeople          = "FISICA"
+)
+
+type KindPeople string
+
+const (
+	PJ KindPeople = "JURIDICA"
+	PF KindPeople = "FISICA"
 )
 
 type Payer struct {

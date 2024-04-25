@@ -5,12 +5,8 @@ import (
 	"net/http"
 )
 
-type Client struct {
-	*http.Client
-}
-
 // NewClient creates a new client with the provided tls certificate.
-func NewClient(cert, key string) (*Client, error) {
+func newClient(cert, key string) (*http.Client, error) {
 	t, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
 		return nil, err
@@ -22,7 +18,5 @@ func NewClient(cert, key string) (*Client, error) {
 		},
 	}
 
-	return &Client{
-		Client: &http.Client{Transport: tr},
-	}, nil
+	return &http.Client{Transport: tr}, nil
 }

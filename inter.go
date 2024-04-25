@@ -1,64 +1,50 @@
 package intersdk
 
-type Inter struct {
-	ClientID     string
-	ClientSecret string
-	KeyFilePath  string
-	CertFilePath string
+import (
+	"errors"
+	"net/http"
 
-	// Client is the HTTP client
-	Client *Client
-	Oauth  *OAuth
+	"github.com/enxservices/sdk-inter/internal/oauth"
+)
+
+var (
+	ErrTlsCertificateNil = errors.New("tls certificate not provided")
+	ErrOauthFailed       = errors.New("oauth failed")
+)
+
+type Inter interface {
 }
 
-type Option func(Inter)
+type inter struct {
+	ClientID     string
+	ClientSecret string
 
-// New creates a new Inter instance with the provided options
-func New(options ...Option) Inter {
-	i := Inter{}
+	client *http.Client
+	Oauth  *oauth.OAuth
+}
+
+type Option func(*inter)
+
+// New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
+func New(keyFilePath, certFilePath, clientID, clientSecret string, options ...Option) (Inter, error) {
+	i := &inter{
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+	}
 
 	for _, option := range options {
 		option(i)
 	}
 
-	// create a new HTTP client
-	c, err := NewClient(i.CertFilePath, i.KeyFilePath)
+	c, err := newClient(certFilePath, keyFilePath)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	i.Client = c
 
-	// create a new OAuth instance
-	o := NewOAuth(i.Client, i.ClientID, i.ClientSecret)
+	i.client = c
+
+	o := oauth.NewOAuth(c)
 	i.Oauth = o
 
-	return i
-}
-
-// WithClientID sets the client ID for the Inter instance
-func WithClientID(clientID string) Option {
-	return func(i Inter) {
-		i.ClientID = clientID
-	}
-}
-
-// WithClientSecret sets the client secret for the Inter instance
-func WithClientSecret(clientSecret string) Option {
-	return func(i Inter) {
-		i.ClientSecret = clientSecret
-	}
-}
-
-// WithKeyFilePath sets the key file path for the Inter instance
-func WithKeyFilePath(keyFilePath string) Option {
-	return func(i Inter) {
-		i.KeyFilePath = keyFilePath
-	}
-}
-
-// WithCertFilePath sets the cert file path for the Inter instance
-func WithCertFilePath(certFilePath string) Option {
-	return func(i Inter) {
-		i.CertFilePath = certFilePath
-	}
+	return i, nil
 }
