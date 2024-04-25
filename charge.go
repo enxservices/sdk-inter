@@ -1,6 +1,7 @@
 package intersdk
 
 import (
+	"errors"
 	"time"
 )
 
@@ -133,4 +134,28 @@ type Charge struct {
 }
 
 type Ticket struct {
+}
+
+// CreateCharge - Create a charge
+func (i inter) CreateCharge(charge Charge) (*Charge, error) {
+	var c Charge
+
+	return &c, errors.New("not implemented")
+}
+
+// GetCharge - Get a charge
+func (i inter) GetCharge(uuid string) (*Charge, error) {
+	var c Charge
+
+	return &c, errors.New("not implemented")
+}
+
+// DowloadCharge - Download a charge
+func (i inter) DowloadCharge(uuid string) ([]byte, error) {
+	return nil, errors.New("not implemented")
+}
+
+// CancelCharge - Cancel a charge
+func (i inter) CancelCharge(uuid string, reason string) error {
+	return errors.New("not implemented")
 }

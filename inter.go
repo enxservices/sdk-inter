@@ -12,10 +12,11 @@ var (
 )
 
 type Inter interface {
-	CreateCharge(Charge)
-	GetCharge(string)
-	DowloadCharge(string) //return base64 PDF
-	CancelCharge(string, string)
+	// Charges - Boleto with Pix QR Code
+	CreateCharge(charge Charge) (*Charge, error)
+	GetCharge(uuid string) (*Charge, error)
+	DowloadCharge(uuid string) ([]byte, error)
+	CancelCharge(uuid string, reason string) error
 }
 
 type inter struct {
@@ -30,7 +31,7 @@ type inter struct {
 type Option func(*inter)
 
 // New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
-func New(keyFilePath, certFilePath, clientID, clientSecret string, options ...Option) (*inter, error) {
+func New(keyFilePath, certFilePath, clientID, clientSecret, accountNumber string, options ...Option) (*inter, error) {
 	i := &inter{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
@@ -40,7 +41,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, options ...Op
 		option(i)
 	}
 
-	c, err := newClient(certFilePath, keyFilePath)
+	c, err := newClient(certFilePath, keyFilePath, accountNumber)
 	if err != nil {
 		return nil, err
 	}
