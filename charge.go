@@ -65,6 +65,32 @@ const (
 	PF KindPeople = "FISICA"
 )
 
+type ChargeStatus string
+
+const (
+	ChargeStatusPending        ChargeStatus = "A_RECEBER"
+	ChargeStatusPaid           ChargeStatus = "RECEBIDO"
+	ChargeStatusCanceled       ChargeStatus = "CANCELADO"
+	ChargeStatusExpired        ChargeStatus = "EXPIRADO"
+	ChargeStatusLate           ChargeStatus = "ATRASADO"
+	ChargeStatusMarkedReceived ChargeStatus = "MARCADO_RECEBIDO"
+)
+
+type ChargeType string
+
+const (
+	ChargeTypeSimple    ChargeType = "SIMPLES"
+	ChargeTypeRecurrent ChargeType = "RECORRENTE"
+	ChargeTypeSplit     ChargeType = "PARCELADO"
+)
+
+type SourceReceived string
+
+const (
+	SourceReceivedPIX    SourceReceived = "PIX"
+	SourceReceivedBoleto SourceReceived = "BOLETO"
+)
+
 type Payer struct {
 	Email      string     `json:"email"`
 	DDD        string     `json:"ddd"`
@@ -101,8 +127,9 @@ type Fine struct {
 }
 
 type LatePaymentFee struct {
-	Fee  int                 `json:"taxa"`
-	Code CodeTypeLatePayment `json:"codigo"`
+	Fee   int                 `json:"taxa"`
+	Code  CodeTypeLatePayment `json:"codigo"`
+	Valor *int                `json:"valor"`
 }
 
 type Beneficiary struct {
@@ -117,7 +144,7 @@ type Beneficiary struct {
 }
 
 // Date Format YYYY-MM-DD (Request STRUCT)
-type CreateCharge struct {
+type CreateChargeRequest struct {
 	YourNumber       string          `json:"seuNumero"`
 	NominalValue     float64         `json:"valorNominal"`
 	DueDate          time.Time       `json:"dataVencimento"`
@@ -125,15 +152,42 @@ type CreateCharge struct {
 	Payer            Payer           `json:"pagador"`
 	Discount         *Discount       `json:"desconto,omitempty"`
 	Fine             *Fine           `json:"multa,omitempty"`
-	LatePayment      *LatePaymentFee `json:"juros,omitempty"`
+	LatePayment      *LatePaymentFee `json:"mora,omitempty"`
 	Message          *Message        `json:"mensagem,omitempty"`
 	FinalBeneficiary Beneficiary     `json:"beneficiarioFinal"`
 }
 
 type Charge struct {
+	SolicitationCode    string         `json:"codigoSolicitacao"`
+	YourNumber          string         `json:"seuNumero"`
+	EmissionDate        string         `json:"dataEmissao"`
+	NominalValue        int            `json:"valorNominal"`
+	DueDate             string         `json:"dataVencimento"`
+	DaysAfterDue        int            `json:"numDiasAgenda"`
+	ChargeType          ChargeType     `json:"tipoCobranca"`
+	Status              ChargeStatus   `json:"situacao"`
+	StatusDate          string         `json:"dataSituacao"`
+	TotalAmountReceived int            `json:"valorTotalRecebido"`
+	SourceReceived      SourceReceived `json:"origemRecebimento"`
+	CancellationReason  string         `json:"motivoCancelamento"`
+	Archived            bool           `json:"arquivada"`
+	Discounts           []Discount     `json:"descontos"`
+	Fine                Fine           `json:"multa"`
+	LatePaymentFee      LatePaymentFee `json:"mora"`
+	Payer               Payer          `json:"pagador"`
+	Boleto              Boleto         `json:"boleto"`
+	Pix                 Pix            `json:"pix"`
 }
 
-type Ticket struct {
+type Boleto struct {
+	OurNumber string `json:"nossoNumero"`
+	BarCode   string `json:"codigoBarras"`
+	LineOne   string `json:"linhaDigitavel"`
+}
+
+type Pix struct {
+	TxID            string `json:"txid"`
+	PixCopyAndPaste string `json:"pixCopiaECola"`
 }
 
 // CreateCharge - Create a charge
