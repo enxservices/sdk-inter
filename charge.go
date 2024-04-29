@@ -1,8 +1,13 @@
 package intersdk
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
 	"time"
+
+	"github.com/enxservices/sdk-inter/internal/types"
 )
 
 type State string
@@ -143,6 +148,14 @@ type Beneficiary struct {
 	ZipCode    string     `json:"cep"`
 }
 
+type CancelChargeRequest struct {
+	Reason string `json:"motivoCancelamento"`
+}
+
+type CreateChargeResponse struct {
+	SolicitationCode string `json:"codigoSolicitacao"`
+}
+
 // Date Format YYYY-MM-DD (Request STRUCT)
 type CreateChargeRequest struct {
 	YourNumber       string          `json:"seuNumero"`
@@ -179,6 +192,19 @@ type Charge struct {
 	Pix                 Pix            `json:"pix"`
 }
 
+type ErrorCancelCharge struct {
+	Status     int         `json:"status"`
+	Title      string      `json:"title"`
+	Detail     string      `json:"detail"`
+	Violations []Violation `json:"violacoes"`
+}
+
+type Violation struct {
+	Reason   string `json:"razao"`
+	Property string `json:"propriedade"`
+	Value    string `json:"valor"`
+}
+
 type Boleto struct {
 	OurNumber string `json:"nossoNumero"`
 	BarCode   string `json:"codigoBarras"`
@@ -191,25 +217,103 @@ type Pix struct {
 }
 
 // CreateCharge - Create a charge
-func (i inter) CreateCharge(charge Charge) (*Charge, error) {
-	var c Charge
+func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
-	return &c, errors.New("not implemented")
+	payload, err := json.Marshal(charge)
+	if err != nil {
+		return "", err
+	}
+
+	res, err := sendRequest(i.client, "POST", types.CobPixBoletoUrl, payload)
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var solicitationCode CreateChargeResponse
+	if err := json.Unmarshal(resBody, &solicitationCode); err != nil {
+		return "", err
+	}
+
+	return solicitationCode.SolicitationCode, nil
 }
 
 // GetCharge - Get a charge
-func (i inter) GetCharge(uuid string) (*Charge, error) {
-	var c Charge
+func (i inter) GetCharge(solicitationCode string) (*Charge, error) {
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s", types.CobPixBoletoUrl, solicitationCode), nil)
 
-	return &c, errors.New("not implemented")
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var charge Charge
+	if err := json.Unmarshal(resBody, &charge); err != nil {
+		return nil, err
+	}
+
+	return &charge, nil
 }
 
 // DowloadCharge - Download a charge
-func (i inter) DowloadCharge(uuid string) ([]byte, error) {
-	return nil, errors.New("not implemented")
+func (i inter) DowloadCharge(solicitationCode string) (string, error) {
+	type Response struct {
+		Pdf string `json:"pdf"`
+	}
+
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/pdf", types.CobPixBoletoUrl, solicitationCode), nil)
+
+	if err != nil {
+		return "", err
+	}
+	defer res.Body.Close()
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+
+	var pdf Response
+	if err := json.Unmarshal(resBody, &pdf); err != nil {
+		return "", err
+	}
+
+	return pdf.Pdf, nil
 }
 
 // CancelCharge - Cancel a charge
-func (i inter) CancelCharge(uuid string, reason string) error {
-	return errors.New("not implemented")
+func (i inter) CancelCharge(solicitationCode string, reason string) error {
+	payload, err := json.Marshal(CancelChargeRequest{Reason: reason})
+
+	if err != nil {
+		return err
+	}
+
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/cancelar", types.CobPixBoletoUrl, solicitationCode), payload)
+
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 202 {
+		var errorCancelCharge ErrorCancelCharge
+		if err := json.NewDecoder(res.Body).Decode(&errorCancelCharge); err != nil {
+			return err
+		}
+		fmt.Println(errorCancelCharge)
+		return errors.New("error canceling charge")
+	}
+
+	return nil
 }

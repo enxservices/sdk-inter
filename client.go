@@ -46,10 +46,10 @@ func sendRequest(client *http.Client, method, url string, body []byte) (*http.Re
 
 	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	return res, nil
 }
