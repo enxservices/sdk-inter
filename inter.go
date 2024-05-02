@@ -41,7 +41,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret, accountNumber string
 		option(i)
 	}
 
-	c, err := NewClient(certFilePath, keyFilePath, accountNumber)
+	c, err := NewClient(certFilePath, keyFilePath, &accountNumber)
 	if err != nil {
 		return nil, err
 	}
