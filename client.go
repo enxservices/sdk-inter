@@ -16,26 +16,39 @@ func (c *customTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return c.transport.RoundTrip(req)
 }
 
-func NewClient(cert, key, accountNumber string) (*http.Client, error) {
+func NewClient(cert, key string, accountNumber *string) (*http.Client, error) {
 	t, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
 		return nil, err
 	}
 
-	originalTransport := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			Certificates: []tls.Certificate{t},
-		},
-	}
+	transport := createTransport(t)
 
 	client := &http.Client{
-		Transport: &customTransport{
-			transport:     originalTransport,
-			accountHeader: accountNumber,
-		},
+		Transport: createCustomTransport(transport, accountNumber),
 	}
 
 	return client, nil
+}
+
+func createTransport(cert tls.Certificate) *http.Transport {
+	return &http.Transport{
+		TLSClientConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		},
+	}
+}
+
+func createCustomTransport(transport *http.Transport, accountNumber *string) http.RoundTripper {
+	if accountNumber == nil {
+		return &customTransport{
+			transport: transport,
+		}
+	}
+	return &customTransport{
+		transport:     transport,
+		accountHeader: *accountNumber,
+	}
 }
 
 func sendRequest(client *http.Client, method, url string, body []byte) (*http.Response, error) {

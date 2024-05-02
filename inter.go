@@ -31,7 +31,7 @@ type inter struct {
 type Option func(*inter)
 
 // New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
-func New(keyFilePath, certFilePath, clientID, clientSecret, accountNumber string, options ...Option) (Inter, error) {
+func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
 	i := &inter{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
