@@ -156,7 +156,6 @@ type CreateChargeResponse struct {
 	SolicitationCode string `json:"codigoSolicitacao"`
 }
 
-// Date Format YYYY-MM-DD (Request STRUCT)
 type CreateChargeRequest struct {
 	YourNumber       string          `json:"seuNumero"`
 	NominalValue     float64         `json:"valorNominal"`

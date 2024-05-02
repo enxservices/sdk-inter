@@ -16,7 +16,7 @@ func (c *customTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return c.transport.RoundTrip(req)
 }
 
-func newClient(cert, key, accountNumber string) (*http.Client, error) {
+func NewClient(cert, key, accountNumber string) (*http.Client, error) {
 	t, err := tls.LoadX509KeyPair(cert, key)
 	if err != nil {
 		return nil, err
