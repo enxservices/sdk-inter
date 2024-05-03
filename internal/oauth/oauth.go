@@ -26,10 +26,10 @@ type oauthData struct {
 }
 
 type OauthResponse struct {
-	AccessToken string        `json:"access_token"`
-	TokenType   string        `json:"token_type"`
-	ExpiresIn   int           `json:"expires_in"`
-	Scope       []types.Scope `json:"scope"`
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int    `json:"expires_in"`
+	Scope       string `json:"scope"`
 }
 
 func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
