@@ -14,7 +14,7 @@ var (
 type Inter interface {
 	// Charges - Boleto with Pix QR Code
 	CreateCharge(charge CreateChargeRequest) (string, error)
-	GetCharge(solicitationCode string) (*Charge, error)
+	GetCharge(solicitationCode string) (*ChargeResponse, error)
 	DowloadCharge(solicitationCode string) (string, error)
 	CancelCharge(solicitationCode string, reason string) error
 }

@@ -121,18 +121,19 @@ type Message struct {
 }
 
 type Discount struct {
-	Fee          int              `json:"taxa"`
+	Fee          float64          `json:"taxa"`
 	Code         CodeTypeDiscount `json:"codigo"`
 	DaysQuantity int              `json:"quantidadeDias"`
 }
 
 type Fine struct {
-	Fee  int         `json:"taxa"`
-	Code CodeTypeFee `json:"codigo"`
+	Fee   float64     `json:"taxa"`
+	Code  CodeTypeFee `json:"codigo"`
+	Value *float64    `json:"valor"`
 }
 
 type LatePaymentFee struct {
-	Fee   int                 `json:"taxa"`
+	Fee   float64             `json:"taxa"`
 	Code  CodeTypeLatePayment `json:"codigo"`
 	Valor *int                `json:"valor"`
 }
@@ -173,7 +174,7 @@ type Charge struct {
 	SolicitationCode    string         `json:"codigoSolicitacao"`
 	YourNumber          string         `json:"seuNumero"`
 	EmissionDate        string         `json:"dataEmissao"`
-	NominalValue        int            `json:"valorNominal"`
+	NominalValue        float64        `json:"valorNominal"`
 	DueDate             string         `json:"dataVencimento"`
 	DaysAfterDue        int            `json:"numDiasAgenda"`
 	ChargeType          ChargeType     `json:"tipoCobranca"`
@@ -187,8 +188,12 @@ type Charge struct {
 	Fine                Fine           `json:"multa"`
 	LatePaymentFee      LatePaymentFee `json:"mora"`
 	Payer               Payer          `json:"pagador"`
-	Boleto              Boleto         `json:"boleto"`
-	Pix                 Pix            `json:"pix"`
+}
+
+type ChargeResponse struct {
+	Charge Charge `json:"cobranca"`
+	Boleto Boleto `json:"boleto"`
+	Pix    Pix    `json:"pix"`
 }
 
 type ErrorCancelCharge struct {
@@ -223,7 +228,9 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	res, err := sendRequest(i.client, "POST", types.CobPixBoletoUrl, payload)
+	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+
+	res, err := sendRequest(i.client, "POST", types.CobPixBoletoUrl, token, payload)
 	if err != nil {
 		return "", err
 	}
@@ -232,6 +239,11 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
+	}
+
+	if res.StatusCode != 200 {
+		fmt.Println(string(resBody))
+		return "", errors.New("error creating charge")
 	}
 
 	var solicitationCode CreateChargeResponse
@@ -243,8 +255,10 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 }
 
 // GetCharge - Get a charge
-func (i inter) GetCharge(solicitationCode string) (*Charge, error) {
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s", types.CobPixBoletoUrl, solicitationCode), nil)
+func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
+	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s", types.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return nil, err
@@ -256,7 +270,7 @@ func (i inter) GetCharge(solicitationCode string) (*Charge, error) {
 		return nil, err
 	}
 
-	var charge Charge
+	var charge ChargeResponse
 	if err := json.Unmarshal(resBody, &charge); err != nil {
 		return nil, err
 	}
@@ -266,11 +280,13 @@ func (i inter) GetCharge(solicitationCode string) (*Charge, error) {
 
 // DowloadCharge - Download a charge
 func (i inter) DowloadCharge(solicitationCode string) (string, error) {
+	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+
 	type Response struct {
 		Pdf string `json:"pdf"`
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/pdf", types.CobPixBoletoUrl, solicitationCode), nil)
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/pdf", types.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return "", err
@@ -292,13 +308,15 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 
 // CancelCharge - Cancel a charge
 func (i inter) CancelCharge(solicitationCode string, reason string) error {
+	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+
 	payload, err := json.Marshal(CancelChargeRequest{Reason: reason})
 
 	if err != nil {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/cancelar", types.CobPixBoletoUrl, solicitationCode), payload)
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/cancelar", types.CobPixBoletoUrl, solicitationCode), token, payload)
 
 	if err != nil {
 		return err
@@ -310,7 +328,6 @@ func (i inter) CancelCharge(solicitationCode string, reason string) error {
 		if err := json.NewDecoder(res.Body).Decode(&errorCancelCharge); err != nil {
 			return err
 		}
-		fmt.Println(errorCancelCharge)
 		return errors.New("error canceling charge")
 	}
 
