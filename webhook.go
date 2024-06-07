@@ -31,8 +31,8 @@ type WebhookPayload struct {
 	YourNumber          string       `json:"seuNumero"`
 	Status              ChargeStatus `json:"situacao"`
 	StatusDateTime      time.Time    `json:"dataHoraSituacao"`
-	TotalReceivedAmount string       `json:"valorTotalRecebido"`
-	ReceivingSource     string       `json:"origemRecebimento"`
+	TotalReceivedAmount *string      `json:"valorTotalRecebido"`
+	ReceivingSource     *string      `json:"origemRecebimento"`
 	OurNumber           string       `json:"nossoNumero"`
 	Barcode             string       `json:"codigoBarras"`
 	DigitableLine       string       `json:"linhaDigitavel"`
