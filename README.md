@@ -2,7 +2,7 @@
 
 ## Installation
 
-Install the `mockgen` tool.
+Install the `sdk-inter` tool.
 
 ```
 go get -u github.com/enxservices/sdk-inter@latest
