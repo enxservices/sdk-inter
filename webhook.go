@@ -30,7 +30,7 @@ type WebhookPayload struct {
 	RequestCode         string       `json:"codigoSolicitacao"`
 	YourNumber          string       `json:"seuNumero"`
 	Status              ChargeStatus `json:"situacao"`
-	StatusDateTime      time.Time    `json:"dataHoraSituacao"`
+	StatusDateTime      string       `json:"dataHoraSituacao"`
 	TotalReceivedAmount *string      `json:"valorTotalRecebido"`
 	ReceivingSource     *string      `json:"origemRecebimento"`
 	OurNumber           string       `json:"nossoNumero"`
