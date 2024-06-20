@@ -91,7 +91,7 @@ type CallBackSend struct {
 }
 
 func (i inter) Create(webhookUrl string) error {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	payload := CreateWebhook{
 		WebhookUrl: webhookUrl,
@@ -117,7 +117,7 @@ func (i inter) Create(webhookUrl string) error {
 }
 
 func (i inter) Get() (*Webhook, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
 	if err != nil {
@@ -143,7 +143,7 @@ func (i inter) Get() (*Webhook, error) {
 }
 
 func (i inter) Delete() (*WebhookError, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
 	if err != nil {
@@ -169,7 +169,7 @@ func (i inter) Delete() (*WebhookError, error) {
 }
 
 func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	baseUrl, err := url.Parse(types.CobWebHookUrlCallbacks)
 	if err != nil {
