@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
+	"time"
 
 	"github.com/enxservices/sdk-inter/internal/types"
 )
@@ -15,8 +15,8 @@ import (
 var ErrOauthFailed = errors.New("oauth failed")
 
 type OAuth struct {
-	client *http.Client
-
+	client     *http.Client
+	tokenStore map[types.Scope]*OauthResponse
 	oauthData
 }
 
@@ -30,6 +30,7 @@ type OauthResponse struct {
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 	Scope       string `json:"scope"`
+	CreatedAt   time.Time
 }
 
 func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
@@ -43,19 +44,14 @@ func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
 }
 
 // Authorize authorizes the client with the provided scopes
-func (o *OAuth) Authorize(scopes []types.Scope) (*OauthResponse, error) {
+func (o *OAuth) Authorize(scope types.Scope) (*OauthResponse, error) {
 	var resp OauthResponse
-
-	var sn []string
-	for _, scope := range scopes {
-		sn = append(sn, scope.String())
-	}
 
 	form := url.Values{}
 	form.Add("client_id", o.ClientID)
 	form.Add("client_secret", o.ClientSecret)
 	form.Add("grant_type", types.GrantType)
-	form.Add("scope", strings.Join(sn, " "))
+	form.Add("scope", scope.String())
 
 	req, err := http.NewRequest(http.MethodPost, types.OauthUrl, bytes.NewBufferString(form.Encode()))
 	if err != nil {
@@ -84,15 +80,30 @@ func (o *OAuth) Authorize(scopes []types.Scope) (*OauthResponse, error) {
 		return nil, err
 	}
 
+	resp.CreatedAt = time.Now()
+
 	return &resp, nil
 }
 
+// margem de erro de 20 min, portanto ao inves de validar token com datacriacao <= 60 min validamos com 40 min
+func (o *OAuth) isValidToken(token *OauthResponse) bool {
+	return time.Since(token.CreatedAt) < time.Duration((token.ExpiresIn-1200))*time.Second
+}
+
 // GetAccessToken returns the access token for the provided scopes (short function)
-func (o *OAuth) GetAccessToken(scopes []types.Scope) string {
-	f, err := o.Authorize(scopes)
+func (o *OAuth) GetAccessToken(scope types.Scope) string {
+	if token, exists := o.tokenStore[scope]; exists {
+		if o.isValidToken(token) {
+			return token.AccessToken
+		}
+	}
+
+	token, err := o.Authorize(scope)
 	if err != nil {
 		return ""
 	}
 
-	return f.AccessToken
+	o.tokenStore[scope] = token
+
+	return token.AccessToken
 }

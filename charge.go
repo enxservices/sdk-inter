@@ -234,7 +234,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	res, err := sendRequest(i.client, "POST", types.CobPixBoletoUrl, token, payload)
 	if err != nil {
@@ -262,7 +262,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 // GetCharge - Get a charge
 func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s", types.CobPixBoletoUrl, solicitationCode), token, nil)
 
@@ -286,7 +286,7 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 
 // DowloadCharge - Download a charge
 func (i inter) DowloadCharge(solicitationCode string) (string, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	type Response struct {
 		Pdf string `json:"pdf"`
@@ -314,7 +314,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 
 // CancelCharge - Cancel a charge
 func (i inter) CancelCharge(solicitationCode string, reason string) error {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	payload, err := json.Marshal(CancelChargeRequest{Reason: reason})
 

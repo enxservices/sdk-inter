@@ -90,8 +90,9 @@ type CallBackSend struct {
 	Data       []Notification `json:"data"`
 }
 
-func (i inter) CreateWebhook(webhookUrl string) error {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+
+func (i inter) Create(webhookUrl string) error {
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	payload := CreateWebhook{
 		WebhookUrl: webhookUrl,
@@ -116,8 +117,9 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 	return nil
 }
 
-func (i inter) GetWebhook() (*Webhook, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+
+func (i inter) Get() (*Webhook, error) {
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
 	if err != nil {
@@ -142,8 +144,8 @@ func (i inter) GetWebhook() (*Webhook, error) {
 	return &webhook, nil
 }
 
-func (i inter) DeleteWebhook() (*WebhookError, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.write"})
+func (i inter) Delete() (*WebhookError, error) {
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
 	if err != nil {
@@ -169,7 +171,7 @@ func (i inter) DeleteWebhook() (*WebhookError, error) {
 }
 
 func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
-	token := i.Oauth.GetAccessToken([]types.Scope{"boleto-cobranca.read"})
+	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	baseUrl, err := url.Parse(types.CobWebHookUrlCallbacks)
 	if err != nil {
