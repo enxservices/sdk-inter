@@ -17,6 +17,10 @@ type Inter interface {
 	GetCharge(solicitationCode string) (*ChargeResponse, error)
 	DowloadCharge(solicitationCode string) (string, error)
 	CancelCharge(solicitationCode string, reason string) error
+	CreateWebhook(webhookUrl string) error
+	GetWebhook() (*Webhook, error)
+	DeleteWebhook() (*WebhookError, error)
+	GetAllCallbackSend(queries Queries) (*CallBackSend, error)
 }
 
 type inter struct {

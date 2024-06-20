@@ -30,9 +30,9 @@ type WebhookPayload struct {
 	RequestCode         string       `json:"codigoSolicitacao"`
 	YourNumber          string       `json:"seuNumero"`
 	Status              ChargeStatus `json:"situacao"`
-	StatusDateTime      time.Time    `json:"dataHoraSituacao"`
-	TotalReceivedAmount string       `json:"valorTotalRecebido"`
-	ReceivingSource     string       `json:"origemRecebimento"`
+	StatusDateTime      string       `json:"dataHoraSituacao"`
+	TotalReceivedAmount *string      `json:"valorTotalRecebido,omitempty"`
+	ReceivingSource     *string      `json:"origemRecebimento,omitempty"`
 	OurNumber           string       `json:"nossoNumero"`
 	Barcode             string       `json:"codigoBarras"`
 	DigitableLine       string       `json:"linhaDigitavel"`
@@ -90,6 +90,7 @@ type CallBackSend struct {
 	Data       []Notification `json:"data"`
 }
 
+
 func (i inter) Create(webhookUrl string) error {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
@@ -115,6 +116,7 @@ func (i inter) Create(webhookUrl string) error {
 
 	return nil
 }
+
 
 func (i inter) Get() (*Webhook, error) {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))

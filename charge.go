@@ -222,6 +222,12 @@ type Pix struct {
 
 // CreateCharge - Create a charge
 func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
+	dueDate, err := time.Parse("2006-01-02", charge.DueDate.Format("2006-01-02"))
+	if err != nil {
+		return "", err
+	}
+
+	charge.DueDate = dueDate
 
 	payload, err := json.Marshal(charge)
 	if err != nil {
