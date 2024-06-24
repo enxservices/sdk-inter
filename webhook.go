@@ -90,8 +90,7 @@ type CallBackSend struct {
 	Data       []Notification `json:"data"`
 }
 
-
-func (i inter) Create(webhookUrl string) error {
+func (i inter) CreateWebhook(webhookUrl string) error {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	payload := CreateWebhook{
@@ -117,8 +116,7 @@ func (i inter) Create(webhookUrl string) error {
 	return nil
 }
 
-
-func (i inter) Get() (*Webhook, error) {
+func (i inter) GetWebhook() (*Webhook, error) {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
@@ -144,7 +142,7 @@ func (i inter) Get() (*Webhook, error) {
 	return &webhook, nil
 }
 
-func (i inter) Delete() (*WebhookError, error) {
+func (i inter) DeleteWebhook() (*WebhookError, error) {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
 	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
