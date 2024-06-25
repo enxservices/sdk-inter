@@ -35,7 +35,8 @@ type OauthResponse struct {
 
 func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
 	return &OAuth{
-		client: client,
+		client:     client,
+		tokenStore: make(map[types.Scope]*OauthResponse),
 		oauthData: oauthData{
 			ClientID:     clientId,
 			ClientSecret: clientSecret,
