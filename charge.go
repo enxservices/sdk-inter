@@ -249,7 +249,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 	if res.StatusCode != 200 {
 		fmt.Println(string(resBody))
-		return "", errors.New("error creating charge")
+		return "", errors.New(string(resBody))
 	}
 
 	var solicitationCode CreateChargeResponse
@@ -274,6 +274,11 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
+	}
+
+	if res.StatusCode != 200 {
+		fmt.Println(string(resBody))
+		return &ChargeResponse{}, errors.New(string(resBody))
 	}
 
 	var charge ChargeResponse
@@ -302,6 +307,11 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", err
+	}
+
+	if res.StatusCode != 200 {
+		fmt.Println(string(resBody))
+		return "", errors.New(string(resBody))
 	}
 
 	var pdf Response
