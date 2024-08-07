@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/enxservices/sdk-inter/internal/oauth"
+	"github.com/enxservices/sdk-inter/internal/types"
 )
 
 var (
@@ -26,6 +27,7 @@ type inter struct {
 	ClientID      string
 	ClientSecret  string
 	ContaCorrente string
+	Environment   string
 
 	client *http.Client
 	Oauth  *oauth.OAuth
@@ -34,10 +36,19 @@ type inter struct {
 type Option func(*inter)
 
 // New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
-func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
+func New(environment, keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
 	i := &inter{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
+	}
+
+	switch environment {
+	case "sandbox":
+		i.Environment = types.BaseUrlSandBox
+	case "production":
+		i.Environment = types.BaseUrlSandBox
+	default:
+		return nil, errors.New("invalid environment provided, please use 'sandbox' or 'production'")
 	}
 
 	for _, option := range options {
