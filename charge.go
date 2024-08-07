@@ -236,7 +236,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
 
-	res, err := sendRequest(i.client, "POST", types.CobPixBoletoUrl, token, payload)
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s", i.Environment, types.CobPixBoletoUrl), token, payload)
 	if err != nil {
 		return "", err
 	}
@@ -264,7 +264,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s", types.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return nil, err
@@ -297,7 +297,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 		Pdf string `json:"pdf"`
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/pdf", types.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s/pdf", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return "", err
@@ -332,7 +332,7 @@ func (i inter) CancelCharge(solicitationCode string, reason string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/cancelar", types.CobPixBoletoUrl, solicitationCode), token, payload)
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/%s/cancelar", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, payload)
 
 	if err != nil {
 		return err
