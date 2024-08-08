@@ -13,7 +13,6 @@ var (
 )
 
 type Inter interface {
-	// Charges - Boleto with Pix QR Code
 	CreateCharge(charge CreateChargeRequest) (string, error)
 	GetCharge(solicitationCode string) (*ChargeResponse, error)
 	DowloadCharge(solicitationCode string) (string, error)
@@ -48,7 +47,6 @@ func WithEnvironment(environment string) Option {
 	}
 }
 
-// New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
 func New(environment, keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
 	i := &inter{
 		ClientID:     clientID,
