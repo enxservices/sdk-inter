@@ -8,8 +8,13 @@ import (
 	"github.com/enxservices/sdk-inter/internal/types"
 )
 
-var (
-	ErrTlsCertificateNil = errors.New("tls certificate not provided")
+var ErrTlsCertificateNil = errors.New("tls certificate not provided")
+
+type Env string
+
+const (
+	EnvProd    Env = "production"
+	EnvSandbox Env = "sandbox"
 )
 
 type Inter interface {
@@ -35,7 +40,7 @@ type inter struct {
 
 type Option func(*inter)
 
-func WithEnvironment(environment string) Option {
+func WithEnvironment(environment Env) Option {
 	return func(i *inter) {
 		switch environment {
 		case "sandbox":
@@ -49,7 +54,7 @@ func WithEnvironment(environment string) Option {
 }
 
 // New creates a new Inter instance with the provided key file path, certificate file path, client id and client secret
-func New(environment, keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
+func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber *string, options ...Option) (Inter, error) {
 	i := &inter{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
