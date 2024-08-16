@@ -234,7 +234,10 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	if err != nil {
+		return "", err
+	}
 
 	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s", i.Environment, types.CobPixBoletoUrl), token, payload)
 	if err != nil {
@@ -262,7 +265,10 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 // GetCharge - Get a charge
 func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
-	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	if err != nil {
+		return nil, err
+	}
 
 	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, nil)
 
@@ -291,7 +297,10 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 
 // DowloadCharge - Download a charge
 func (i inter) DowloadCharge(solicitationCode string) (string, error) {
-	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	if err != nil {
+		return "", err
+	}
 
 	type Response struct {
 		Pdf string `json:"pdf"`
@@ -324,7 +333,10 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 
 // CancelCharge - Cancel a charge
 func (i inter) CancelCharge(solicitationCode string, reason string) error {
-	token := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	if err != nil {
+		return err
+	}
 
 	payload, err := json.Marshal(CancelChargeRequest{Reason: reason})
 

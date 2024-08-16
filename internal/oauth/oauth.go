@@ -92,19 +92,19 @@ func (o *OAuth) isValidToken(token *OauthResponse) bool {
 }
 
 // GetAccessToken returns the access token for the provided scopes (short function)
-func (o *OAuth) GetAccessToken(scope types.Scope) string {
+func (o *OAuth) GetAccessToken(scope types.Scope) (string, error) {
 	if token, exists := o.tokenStore[scope]; exists {
 		if o.isValidToken(token) {
-			return token.AccessToken
+			return token.AccessToken, nil
 		}
 	}
 
 	token, err := o.Authorize(scope)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	o.tokenStore[scope] = token
 
-	return token.AccessToken
+	return token.AccessToken, nil
 }
