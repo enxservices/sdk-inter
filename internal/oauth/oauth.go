@@ -88,7 +88,9 @@ func (o *OAuth) Authorize(scope types.Scope) (*OauthResponse, error) {
 
 // margem de erro de 20 min, portanto ao inves de validar token com datacriacao <= 60 min validamos com 40 min
 func (o *OAuth) isValidToken(token *OauthResponse) bool {
-	return time.Since(token.CreatedAt) < time.Duration((token.ExpiresIn-1200))*time.Second
+	expirationTime := token.CreatedAt.Add(time.Duration(token.ExpiresIn) * time.Second)
+	safetyMargin := 20 * time.Minute
+	return time.Now().Before(expirationTime.Add(-safetyMargin))
 }
 
 // GetAccessToken returns the access token for the provided scopes (short function)
