@@ -11,3 +11,10 @@ const (
 	CobWebHookUrlCallbacks = "cobranca/v3/cobrancas/webhook/callbacks"
 	GrantType              = "client_credentials"
 )
+
+type Env string
+
+const (
+	EnvProd    Env = "production"
+	EnvSandbox Env = "sandbox"
+)

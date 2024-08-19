@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -15,8 +16,9 @@ import (
 var ErrOauthFailed = errors.New("oauth failed")
 
 type OAuth struct {
-	client     *http.Client
-	tokenStore map[types.Scope]*OauthResponse
+	client      *http.Client
+	tokenStore  map[types.Scope]*OauthResponse
+	environment types.Env
 	oauthData
 }
 
@@ -33,10 +35,11 @@ type OauthResponse struct {
 	CreatedAt   time.Time
 }
 
-func NewOAuth(client *http.Client, clientId, clientSecret string) *OAuth {
+func NewOAuth(client *http.Client, clientId, clientSecret string, env types.Env) *OAuth {
 	return &OAuth{
-		client:     client,
-		tokenStore: make(map[types.Scope]*OauthResponse),
+		client:      client,
+		tokenStore:  make(map[types.Scope]*OauthResponse),
+		environment: env,
 		oauthData: oauthData{
 			ClientID:     clientId,
 			ClientSecret: clientSecret,
@@ -54,7 +57,7 @@ func (o *OAuth) Authorize(scope types.Scope) (*OauthResponse, error) {
 	form.Add("grant_type", types.GrantType)
 	form.Add("scope", scope.String())
 
-	req, err := http.NewRequest(http.MethodPost, types.OauthUrl, bytes.NewBufferString(form.Encode()))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/%s", o.environment, types.OauthUrl), bytes.NewBufferString(form.Encode()))
 	if err != nil {
 		return nil, err
 	}

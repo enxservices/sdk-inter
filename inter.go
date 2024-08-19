@@ -10,13 +10,6 @@ import (
 
 var ErrTlsCertificateNil = errors.New("tls certificate not provided")
 
-type Env string
-
-const (
-	EnvProd    Env = "production"
-	EnvSandbox Env = "sandbox"
-)
-
 type Inter interface {
 	// Charges - Boleto with Pix QR Code
 	CreateCharge(charge CreateChargeRequest) (string, error)
@@ -32,7 +25,7 @@ type inter struct {
 	ClientID      string
 	ClientSecret  string
 	ContaCorrente string
-	Environment   string
+	Environment   types.Env
 
 	client *http.Client
 	Oauth  *oauth.OAuth
@@ -40,7 +33,7 @@ type inter struct {
 
 type Option func(*inter)
 
-func WithEnvironment(environment Env) Option {
+func WithEnvironment(environment types.Env) Option {
 	return func(i *inter) {
 		switch environment {
 		case "sandbox":
@@ -72,7 +65,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber
 
 	i.client = c
 
-	o := oauth.NewOAuth(c, clientID, clientSecret)
+	o := oauth.NewOAuth(c, clientID, clientSecret, i.Environment)
 	i.Oauth = o
 
 	return i, nil
