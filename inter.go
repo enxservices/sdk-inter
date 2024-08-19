@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/enxservices/sdk-inter/internal/oauth"
-	"github.com/enxservices/sdk-inter/types"
+	"github.com/enxservices/sdk-inter/internal/types"
 )
 
 var ErrTlsCertificateNil = errors.New("tls certificate not provided")
@@ -25,7 +25,7 @@ type inter struct {
 	ClientID      string
 	ClientSecret  string
 	ContaCorrente string
-	Environment   types.Env
+	BaseURL       string
 
 	client *http.Client
 	Oauth  *oauth.OAuth
@@ -33,16 +33,9 @@ type inter struct {
 
 type Option func(*inter)
 
-func WithEnvironment(environment types.Env) Option {
+func WithSandboxEnv() Option {
 	return func(i *inter) {
-		switch environment {
-		case "sandbox":
-			i.Environment = types.BaseUrlSandBox
-		case "production":
-			i.Environment = types.BaseUrlProduction
-		default:
-			panic("invalid environment provided, please use 'sandbox' or 'production'")
-		}
+		i.BaseURL = types.BaseUrlSandBox
 	}
 }
 
@@ -51,7 +44,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber
 	i := &inter{
 		ClientID:     clientID,
 		ClientSecret: clientSecret,
-		Environment:  types.BaseUrlProduction,
+		BaseURL:      types.BaseUrlProduction,
 	}
 
 	for _, option := range options {
@@ -65,7 +58,7 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber
 
 	i.client = c
 
-	o := oauth.NewOAuth(c, clientID, clientSecret, i.Environment)
+	o := oauth.NewOAuth(c, clientID, clientSecret, i.BaseURL)
 	i.Oauth = o
 
 	return i, nil

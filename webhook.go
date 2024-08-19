@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/enxservices/sdk-inter/types"
+	types2 "github.com/enxservices/sdk-inter/internal/types"
 )
 
 type Notification struct {
@@ -91,7 +91,7 @@ type CallBackSend struct {
 }
 
 func (i inter) CreateWebhook(webhookUrl string) error {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "PUT", types.CobWebHookUrl, token, jsonData)
+	res, err := sendRequest(i.client, "PUT", types2.CobWebHookUrl, token, jsonData)
 	if err != nil {
 		return err
 	}
@@ -120,12 +120,12 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 }
 
 func (i inter) GetWebhook() (*Webhook, error) {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -149,12 +149,12 @@ func (i inter) GetWebhook() (*Webhook, error) {
 }
 
 func (i inter) DeleteWebhook() (*WebhookError, error) {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -178,12 +178,12 @@ func (i inter) DeleteWebhook() (*WebhookError, error) {
 }
 
 func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
 	if err != nil {
 		return nil, err
 	}
 
-	baseUrl, err := url.Parse(types.CobWebHookUrlCallbacks)
+	baseUrl, err := url.Parse(types2.CobWebHookUrlCallbacks)
 	if err != nil {
 		return nil, err
 	}

@@ -10,15 +10,15 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/enxservices/sdk-inter/types"
+	types2 "github.com/enxservices/sdk-inter/internal/types"
 )
 
 var ErrOauthFailed = errors.New("oauth failed")
 
 type OAuth struct {
-	client      *http.Client
-	tokenStore  map[types.Scope]*OauthResponse
-	environment types.Env
+	client     *http.Client
+	tokenStore map[types2.Scope]*OauthResponse
+	baseURL    string
 	oauthData
 }
 
@@ -35,11 +35,11 @@ type OauthResponse struct {
 	CreatedAt   time.Time
 }
 
-func NewOAuth(client *http.Client, clientId, clientSecret string, env types.Env) *OAuth {
+func NewOAuth(client *http.Client, clientId, clientSecret string, baseURL string) *OAuth {
 	return &OAuth{
-		client:      client,
-		tokenStore:  make(map[types.Scope]*OauthResponse),
-		environment: env,
+		client:     client,
+		tokenStore: make(map[types2.Scope]*OauthResponse),
+		baseURL:    baseURL,
 		oauthData: oauthData{
 			ClientID:     clientId,
 			ClientSecret: clientSecret,
@@ -48,16 +48,16 @@ func NewOAuth(client *http.Client, clientId, clientSecret string, env types.Env)
 }
 
 // Authorize authorizes the client with the provided scopes
-func (o *OAuth) Authorize(scope types.Scope) (*OauthResponse, error) {
+func (o *OAuth) Authorize(scope types2.Scope) (*OauthResponse, error) {
 	var resp OauthResponse
 
 	form := url.Values{}
 	form.Add("client_id", o.ClientID)
 	form.Add("client_secret", o.ClientSecret)
-	form.Add("grant_type", types.GrantType)
+	form.Add("grant_type", types2.GrantType)
 	form.Add("scope", scope.String())
 
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/%s", o.environment, types.OauthUrl), bytes.NewBufferString(form.Encode()))
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/%s", o.baseURL, types2.OauthUrl), bytes.NewBufferString(form.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -97,7 +97,7 @@ func (o *OAuth) isValidToken(token *OauthResponse) bool {
 }
 
 // GetAccessToken returns the access token for the provided scopes (short function)
-func (o *OAuth) GetAccessToken(scope types.Scope) (string, error) {
+func (o *OAuth) GetAccessToken(scope types2.Scope) (string, error) {
 	if token, exists := o.tokenStore[scope]; exists {
 		if o.isValidToken(token) {
 			return token.AccessToken, nil

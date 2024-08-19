@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/enxservices/sdk-inter/types"
+	types2 "github.com/enxservices/sdk-inter/internal/types"
 )
 
 type State string
@@ -234,12 +234,12 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
 	if err != nil {
 		return "", err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s", i.Environment, types.CobPixBoletoUrl), token, payload)
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), token, payload)
 	if err != nil {
 		return "", err
 	}
@@ -265,12 +265,12 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 // GetCharge - Get a charge
 func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return nil, err
@@ -297,7 +297,7 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 
 // DowloadCharge - Download a charge
 func (i inter) DowloadCharge(solicitationCode string) (string, error) {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.read"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
 	if err != nil {
 		return "", err
 	}
@@ -306,7 +306,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 		Pdf string `json:"pdf"`
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s/pdf", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s/pdf", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return "", err
@@ -333,7 +333,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 
 // CancelCharge - Cancel a charge
 func (i inter) CancelCharge(solicitationCode string, reason string) error {
-	token, err := i.Oauth.GetAccessToken(types.Scope("boleto-cobranca.write"))
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
 	if err != nil {
 		return err
 	}
@@ -344,7 +344,7 @@ func (i inter) CancelCharge(solicitationCode string, reason string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/%s/cancelar", i.Environment, types.CobPixBoletoUrl, solicitationCode), token, payload)
+	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/%s/cancelar", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, payload)
 
 	if err != nil {
 		return err
