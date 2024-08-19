@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/enxservices/sdk-inter/internal/types"
+	"github.com/enxservices/sdk-inter/types"
 )
 
 var ErrOauthFailed = errors.New("oauth failed")

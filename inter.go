@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/enxservices/sdk-inter/internal/oauth"
-	"github.com/enxservices/sdk-inter/internal/types"
+	"github.com/enxservices/sdk-inter/types"
 )
 
 var ErrTlsCertificateNil = errors.New("tls certificate not provided")

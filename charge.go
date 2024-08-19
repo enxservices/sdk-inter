@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/enxservices/sdk-inter/internal/types"
+	"github.com/enxservices/sdk-inter/types"
 )
 
 type State string
