@@ -190,6 +190,32 @@ type Charge struct {
 	Payer               Payer          `json:"pagador"`
 }
 
+type ChargeList struct {
+	TotalPages       int  `json:"totalPaginas"`
+	TotalElements    int  `json:"totalElementos"`
+	SizePage         int  `json:"tamanhoPagina"`
+	FistPage         bool `json:"primeiraPagina"`
+	LastPage         bool `json:"ultimaPagina"`
+	NumberOfElements int  `json:"numeroDeElementos"`
+	Charges          []struct {
+		SolicitationCode string       `json:"codigoSolicitacao"`
+		YourNumber       string       `json:"seuNumero"`
+		EmissionDate     string       `json:"dataEmissao"`
+		NominalValue     float64      `json:"valorNominal"`
+		DueDate          string       `json:"dataVencimento"`
+		DaysAfterDue     int          `json:"numDiasAgenda"`
+		ChargeType       ChargeType   `json:"tipoCobranca"`
+		Status           ChargeStatus `json:"situacao"`
+		StatusDate       string       `json:"dataSituacao"`
+		Payer            struct {
+			Name string `json:"nome"`
+			Doc  string `json:"cpfCnpj"`
+		} `json:"pagador"`
+	}
+	Boleto Boleto `json:"boleto"`
+	Pix    Pix    `json:"pix"`
+}
+
 type ChargeResponse struct {
 	Charge Charge `json:"cobranca"`
 	Boleto Boleto `json:"boleto"`
@@ -329,6 +355,30 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 	}
 
 	return pdf.Pdf, nil
+}
+
+func (i inter) GetChargeList() (*ChargeList, error) {
+	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/cobrancas", i.BaseURL), token, nil)
+
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode == 200 {
+		var chargeList ChargeList
+		if err := json.NewDecoder(res.Body).Decode(&chargeList); err != nil {
+			return nil, err
+		}
+		return &chargeList, nil
+	}
+
+	return nil, errors.New("error getting charge list")
 }
 
 // CancelCharge - Cancel a charge
