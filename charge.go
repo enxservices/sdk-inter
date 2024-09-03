@@ -219,9 +219,8 @@ type ChargeList struct {
 			SolicitationCode string       `json:"codigoSolicitacao"`
 			YourNumber       string       `json:"seuNumero"`
 			EmissionDate     string       `json:"dataEmissao"`
-			NominalValue     float64      `json:"valorNominal"`
+			NominalValue     string       `json:"valorNominal"`
 			DueDate          string       `json:"dataVencimento"`
-			DaysAfterDue     int          `json:"numDiasAgenda"`
 			ChargeType       ChargeType   `json:"tipoCobranca"`
 			Status           ChargeStatus `json:"situacao"`
 			StatusDate       string       `json:"dataSituacao"`
