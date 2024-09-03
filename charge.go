@@ -375,7 +375,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 }
 
 func buildChargeListURL(baseURL string, params QueryParamChargeList) string {
-	url, err := url.Parse(fmt.Sprintf("%s/cobrancas", baseURL))
+	url, err := url.Parse(baseURL)
 	if err != nil {
 		panic(err)
 	}
@@ -428,7 +428,7 @@ func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", buildChargeListURL(fmt.Sprintf("%s/cobrancas", i.BaseURL), params), token, nil)
+	res, err := sendRequest(i.client, "GET", buildChargeListURL(fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), params), token, nil)
 
 	if err != nil {
 		return nil, err
