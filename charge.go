@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
+	"strconv"
 	"time"
 
 	types2 "github.com/enxservices/sdk-inter/internal/types"
@@ -95,6 +97,21 @@ const (
 	SourceReceivedPIX    SourceReceived = "PIX"
 	SourceReceivedBoleto SourceReceived = "BOLETO"
 )
+
+type QueryParamChargeList struct {
+	InitialDate   *string `json:"dataInicial"`
+	FinalDate     *string `json:"dataFinal"`
+	FilterDataPor *string `json:"filtroDataPor"`
+	Status        *string `json:"situacao"`
+	Payer         *string `json:"pessoaPagadora"`
+	Doc           *string `json:"cpfCnpjPessoaPagadora"`
+	YourNumber    *string `json:"seuNumero"`
+	CobType       *string `json:"tipoCobranca"`
+	ItemPerPage   *int    `json:"paginacao.itensPorPagina"`
+	CurrentPage   *int    `json:"paginacao.paginaAtual"`
+	SortBy        *string `json:"ordernarPor"`
+	TypeSort      *string `json:"tipoOrdenacao"`
+}
 
 type Payer struct {
 	Email      string     `json:"email"`
@@ -357,13 +374,61 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 	return pdf.Pdf, nil
 }
 
-func (i inter) GetChargeList() (*ChargeList, error) {
+func buildChargeListURL(baseURL string, params QueryParamChargeList) string {
+	url, err := url.Parse(fmt.Sprintf("%s/cobrancas", baseURL))
+	if err != nil {
+		panic(err)
+	}
+	query := url.Query()
+
+	if params.InitialDate != nil {
+		query.Add("dataInicial", *params.InitialDate)
+	}
+	if params.FinalDate != nil {
+		query.Add("dataFinal", *params.FinalDate)
+	}
+	if params.FilterDataPor != nil {
+		query.Add("filtroDataPor", *params.FilterDataPor)
+	}
+	if params.Status != nil {
+		query.Add("situacao", *params.Status)
+	}
+	if params.Payer != nil {
+		query.Add("pessoaPagadora", *params.Payer)
+	}
+	if params.Doc != nil {
+		query.Add("cpfCnpjPessoaPagadora", *params.Doc)
+	}
+	if params.YourNumber != nil {
+		query.Add("seuNumero", *params.YourNumber)
+	}
+	if params.CobType != nil {
+		query.Add("tipoCobranca", *params.CobType)
+	}
+	if params.ItemPerPage != nil {
+		query.Add("paginacao.itensPorPagina", strconv.Itoa(*params.ItemPerPage))
+	}
+	if params.CurrentPage != nil {
+		query.Add("paginacao.paginaAtual", strconv.Itoa(*params.CurrentPage))
+	}
+	if params.SortBy != nil {
+		query.Add("ordernarPor", *params.SortBy)
+	}
+	if params.TypeSort != nil {
+		query.Add("tipoOrdenacao", *params.TypeSort)
+	}
+
+	url.RawQuery = query.Encode()
+	return url.String()
+}
+
+func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
 	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/cobrancas", i.BaseURL), token, nil)
+	res, err := sendRequest(i.client, "GET", buildChargeListURL(fmt.Sprintf("%s/cobrancas", i.BaseURL), params), token, nil)
 
 	if err != nil {
 		return nil, err
