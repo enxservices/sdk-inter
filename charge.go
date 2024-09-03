@@ -247,9 +247,9 @@ type ErrorCancelCharge struct {
 }
 
 type Violation struct {
-	Reason   string `json:"razao"`
-	Property string `json:"propriedade"`
-	Value    string `json:"valor"`
+	Reason   string  `json:"razao"`
+	Property string  `json:"propriedade"`
+	Value    *string `json:"valor"`
 }
 
 type Boleto struct {
@@ -435,15 +435,21 @@ func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode == 200 {
-		var chargeList ChargeList
-		if err := json.NewDecoder(res.Body).Decode(&chargeList); err != nil {
-			return nil, err
-		}
-		return &chargeList, nil
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("error getting charge list")
+	if res.StatusCode != 200 {
+		return nil, errors.New(string(resBody))
+	}
+
+	var chargeList ChargeList
+	if err := json.Unmarshal(resBody, &chargeList); err != nil {
+		return nil, err
+	}
+
+	return &chargeList, nil
 }
 
 // CancelCharge - Cancel a charge
