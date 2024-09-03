@@ -215,22 +215,24 @@ type ChargeList struct {
 	LastPage         bool `json:"ultimaPagina"`
 	NumberOfElements int  `json:"numeroDeElementos"`
 	Charges          []struct {
-		SolicitationCode string       `json:"codigoSolicitacao"`
-		YourNumber       string       `json:"seuNumero"`
-		EmissionDate     string       `json:"dataEmissao"`
-		NominalValue     float64      `json:"valorNominal"`
-		DueDate          string       `json:"dataVencimento"`
-		DaysAfterDue     int          `json:"numDiasAgenda"`
-		ChargeType       ChargeType   `json:"tipoCobranca"`
-		Status           ChargeStatus `json:"situacao"`
-		StatusDate       string       `json:"dataSituacao"`
-		Payer            struct {
-			Name string `json:"nome"`
-			Doc  string `json:"cpfCnpj"`
-		} `json:"pagador"`
-	}
-	Boleto Boleto `json:"boleto"`
-	Pix    Pix    `json:"pix"`
+		Charge struct {
+			SolicitationCode string       `json:"codigoSolicitacao"`
+			YourNumber       string       `json:"seuNumero"`
+			EmissionDate     string       `json:"dataEmissao"`
+			NominalValue     float64      `json:"valorNominal"`
+			DueDate          string       `json:"dataVencimento"`
+			DaysAfterDue     int          `json:"numDiasAgenda"`
+			ChargeType       ChargeType   `json:"tipoCobranca"`
+			Status           ChargeStatus `json:"situacao"`
+			StatusDate       string       `json:"dataSituacao"`
+			Payer            struct {
+				Name string `json:"nome"`
+				Doc  string `json:"cpfCnpj"`
+			} `json:"pagador"`
+		} `json:"cobranca"`
+		Boleto Boleto `json:"boleto"`
+		Pix    Pix    `json:"pix"`
+	} `json:"cobrancas"`
 }
 
 type ChargeResponse struct {
