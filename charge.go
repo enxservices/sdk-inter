@@ -295,7 +295,6 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 	}
 
 	if res.StatusCode != 200 {
-		fmt.Println(string(resBody))
 		return "", errors.New(string(resBody))
 	}
 

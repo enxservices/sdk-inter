@@ -3,7 +3,6 @@ package oauth
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,9 +10,8 @@ import (
 	"time"
 
 	types2 "github.com/enxservices/sdk-inter/internal/types"
+	"github.com/pkg/errors"
 )
-
-var ErrOauthFailed = errors.New("oauth failed")
 
 type OAuth struct {
 	client     *http.Client
@@ -76,7 +74,7 @@ func (o *OAuth) Authorize(scope types2.Scope) (*OauthResponse, error) {
 	}
 
 	if body == nil || res.StatusCode != http.StatusOK {
-		return nil, ErrOauthFailed
+		return nil, errors.New(string(body))
 	}
 
 	// unmarshal
