@@ -3,6 +3,7 @@ package oauth
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	types2 "github.com/enxservices/sdk-inter/internal/types"
-	"github.com/pkg/errors"
 )
 
 type OAuth struct {
