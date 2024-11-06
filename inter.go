@@ -27,6 +27,7 @@ type inter struct {
 	ClientSecret  string
 	ContaCorrente string
 	BaseURL       string
+	DisableTLS    bool
 
 	client *http.Client
 	Oauth  *oauth.OAuth
@@ -37,6 +38,13 @@ type Option func(*inter)
 func WithSandboxEnv() Option {
 	return func(i *inter) {
 		i.BaseURL = types.BaseUrlSandBox
+	}
+}
+
+func WithLocalEnv(url string) Option {
+	return func(i *inter) {
+		i.BaseURL = url
+		i.DisableTLS = true
 	}
 }
 
@@ -52,14 +60,18 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber
 		option(i)
 	}
 
-	c, err := NewClient(certFilePath, keyFilePath, accountNumber)
-	if err != nil {
-		return nil, err
+	var err error
+	if !i.DisableTLS {
+		i.client, err = NewClient(certFilePath, keyFilePath, accountNumber)
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+		i.client = http.DefaultClient
 	}
 
-	i.client = c
-
-	o := oauth.NewOAuth(c, clientID, clientSecret, i.BaseURL)
+	o := oauth.NewOAuth(i.client, clientID, clientSecret, i.BaseURL)
 	i.Oauth = o
 
 	return i, nil
