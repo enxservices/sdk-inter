@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -106,7 +107,7 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "PUT", types2.CobWebHookUrl, token, jsonData)
+	res, err := sendRequest(i.client, http.MethodPut, types2.CobWebHookUrl, token, jsonData)
 	if err != nil {
 		return err
 	}
@@ -125,7 +126,7 @@ func (i inter) GetWebhook() (*Webhook, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +155,7 @@ func (i inter) DeleteWebhook() (*WebhookError, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, http.MethodDelete, types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +207,7 @@ func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
 
 	baseUrl.RawQuery = params.Encode()
 
-	res, err := sendRequest(i.client, "GET", baseUrl.String(), token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, baseUrl.String(), token, nil)
 	if err != nil {
 		return nil, err
 	}

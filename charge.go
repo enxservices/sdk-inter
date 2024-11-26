@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"strconv"
 	"time"
@@ -283,7 +284,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), token, payload)
+	res, err := sendRequest(i.client, http.MethodPost, fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), token, payload)
 	if err != nil {
 		return "", err
 	}
@@ -313,7 +314,7 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, fmt.Sprintf("%s/%s/%s", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return nil, err
@@ -349,7 +350,7 @@ func (i inter) DowloadCharge(solicitationCode string) (string, error) {
 		Pdf string `json:"pdf"`
 	}
 
-	res, err := sendRequest(i.client, "GET", fmt.Sprintf("%s/%s/%s/pdf", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, fmt.Sprintf("%s/%s/%s/pdf", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, nil)
 
 	if err != nil {
 		return "", err
@@ -428,7 +429,7 @@ func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", buildChargeListURL(fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), params), token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, buildChargeListURL(fmt.Sprintf("%s/%s", i.BaseURL, types2.CobPixBoletoUrl), params), token, nil)
 
 	if err != nil {
 		return nil, err
@@ -465,7 +466,7 @@ func (i inter) CancelCharge(solicitationCode string, reason string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "POST", fmt.Sprintf("%s/%s/%s/cancelar", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, payload)
+	res, err := sendRequest(i.client, http.MethodPost, fmt.Sprintf("%s/%s/%s/cancelar", i.BaseURL, types2.CobPixBoletoUrl, solicitationCode), token, payload)
 
 	if err != nil {
 		return err
