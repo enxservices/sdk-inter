@@ -197,7 +197,7 @@ type Charge struct {
 	ChargeType          ChargeType     `json:"tipoCobranca"`
 	Status              ChargeStatus   `json:"situacao"`
 	StatusDate          string         `json:"dataSituacao"`
-	TotalAmountReceived int            `json:"valorTotalRecebido"`
+	TotalAmountReceived string         `json:"valorTotalRecebido"`
 	SourceReceived      SourceReceived `json:"origemRecebimento"`
 	CancellationReason  string         `json:"motivoCancelamento"`
 	Archived            bool           `json:"arquivada"`
