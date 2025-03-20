@@ -11,7 +11,6 @@ import (
 var ErrTlsCertificateNil = errors.New("tls certificate not provided")
 
 type Inter interface {
-	// Charges - Boleto with Pix QR Code
 	CreateCharge(charge CreateChargeRequest) (string, error)
 	GetCharge(solicitationCode string) (*ChargeResponse, error)
 	GetChargeList(params QueryParamChargeList) (*ChargeList, error)
@@ -66,7 +65,6 @@ func New(keyFilePath, certFilePath, clientID, clientSecret string, accountNumber
 		if err != nil {
 			return nil, err
 		}
-
 	} else {
 		i.client = http.DefaultClient
 	}

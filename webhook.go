@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -106,14 +107,14 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, "PUT", types2.CobWebHookUrl, token, jsonData)
+	res, err := sendRequest(i.client, http.MethodPut, types2.CobWebHookUrl, token, jsonData)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != 204 {
-		return errors.New("unable to create webhook")
+	if res.StatusCode >= 400 {
+		return fmt.Errorf("falha ao criar webhook: %+v", res)
 	}
 
 	return nil
@@ -125,7 +126,7 @@ func (i inter) GetWebhook() (*Webhook, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -154,7 +155,7 @@ func (i inter) DeleteWebhook() (*WebhookError, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, "GET", types2.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, types2.CobWebHookUrl, token, nil)
 	if err != nil {
 		return nil, err
 	}
