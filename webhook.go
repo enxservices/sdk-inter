@@ -107,7 +107,7 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 		return err
 	}
 
-	res, err := sendRequest(i.client, http.MethodPut, types2.CobWebHookUrl, token, jsonData)
+	res, err := sendRequest(i.client, http.MethodPut, fmt.Sprintf("%s/%s", i.BaseURL, types2.CobWebHookUrl), token, jsonData)
 	if err != nil {
 		return err
 	}
@@ -207,7 +207,7 @@ func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
 
 	baseUrl.RawQuery = params.Encode()
 
-	res, err := sendRequest(i.client, "GET", baseUrl.String(), token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, baseUrl.String(), token, nil)
 	if err != nil {
 		return nil, err
 	}
