@@ -43,6 +43,11 @@ func WithSandboxEnv() Option {
 func WithLocalEnv(url string) Option {
 	return func(i *inter) {
 		i.BaseURL = url
+	}
+}
+
+func WithDisableTLS() Option {
+	return func(i *inter) {
 		i.DisableTLS = true
 	}
 }

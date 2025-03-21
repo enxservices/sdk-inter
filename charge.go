@@ -278,7 +278,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 		return "", err
 	}
 
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaWrite)
 	if err != nil {
 		return "", err
 	}
@@ -308,7 +308,7 @@ func (i inter) CreateCharge(charge CreateChargeRequest) (string, error) {
 
 // GetCharge - Get a charge
 func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaRead)
 	if err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ func (i inter) GetCharge(solicitationCode string) (*ChargeResponse, error) {
 
 // DowloadCharge - Download a charge
 func (i inter) DowloadCharge(solicitationCode string) (string, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaRead)
 	if err != nil {
 		return "", err
 	}
@@ -421,7 +421,7 @@ func buildChargeListURL(baseURL string, params QueryParamChargeList) string {
 }
 
 func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaRead)
 	if err != nil {
 		return nil, err
 	}
@@ -452,7 +452,7 @@ func (i inter) GetChargeList(params QueryParamChargeList) (*ChargeList, error) {
 
 // CancelCharge - Cancel a charge
 func (i inter) CancelCharge(solicitationCode string, reason string) error {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaWrite)
 	if err != nil {
 		return err
 	}

@@ -59,6 +59,7 @@ func (e WebhookError) String() string {
 	for _, v := range e.Violations {
 		violationsStr.WriteString(fmt.Sprintf("Reason: %s, Property: %s, Value: %s\n", v.Reason, v.Property, v.Value))
 	}
+	
 	return fmt.Sprintf(
 		"Title: %s\nStatusCode: %d\nDetail: %s\nViolations:\n%s",
 		e.Title, e.StatusCode, e.Detail, violationsStr.String(),
@@ -92,7 +93,7 @@ type CallBackSend struct {
 }
 
 func (i inter) CreateWebhook(webhookUrl string) error {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaWrite)
 	if err != nil {
 		return err
 	}
@@ -121,7 +122,7 @@ func (i inter) CreateWebhook(webhookUrl string) error {
 }
 
 func (i inter) GetWebhook() (*Webhook, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaRead)
 	if err != nil {
 		return nil, err
 	}
@@ -150,7 +151,7 @@ func (i inter) GetWebhook() (*Webhook, error) {
 }
 
 func (i inter) DeleteWebhook() (*WebhookError, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.write")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaWrite)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +180,7 @@ func (i inter) DeleteWebhook() (*WebhookError, error) {
 }
 
 func (i inter) GetAllCallbackSend(queries Queries) (*CallBackSend, error) {
-	token, err := i.Oauth.GetAccessToken("boleto-cobranca.read")
+	token, err := i.Oauth.GetAccessToken(types2.BoletoCobrancaRead)
 	if err != nil {
 		return nil, err
 	}

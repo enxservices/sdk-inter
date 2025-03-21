@@ -3,7 +3,6 @@ package oauth
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -74,10 +73,9 @@ func (o *OAuth) Authorize(scope types2.Scope) (*OauthResponse, error) {
 	}
 
 	if body == nil || res.StatusCode != http.StatusOK {
-		return nil, errors.New(string(body))
+		return nil, fmt.Errorf("falha ao realizar oauth: %w", err)
 	}
 
-	// unmarshal
 	if err := json.Unmarshal(body, &resp); err != nil {
 		return nil, err
 	}
