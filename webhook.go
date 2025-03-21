@@ -126,7 +126,7 @@ func (i inter) GetWebhook() (*Webhook, error) {
 		return nil, err
 	}
 
-	res, err := sendRequest(i.client, http.MethodGet, types2.CobWebHookUrl, token, nil)
+	res, err := sendRequest(i.client, http.MethodGet, fmt.Sprintf("%s/%s", i.BaseURL, types2.CobWebHookUrl), token, nil)
 	if err != nil {
 		return nil, err
 	}
