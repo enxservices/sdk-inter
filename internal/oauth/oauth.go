@@ -73,7 +73,7 @@ func (o *OAuth) Authorize(scope types2.Scope) (*OauthResponse, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("falha ao realizar oauth: %s", body)
+		return nil, fmt.Errorf("falha ao realizar oauth(%d): %s", res.StatusCode, body)
 	}
 
 	if err := json.Unmarshal(body, &resp); err != nil {
